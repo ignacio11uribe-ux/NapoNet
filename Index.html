@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NapoNet | Mantención y Continuidad Operativa</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            orange: '#FF5500',
+                            yellow: '#FFB800',
+                            cyan: '#00F0FF',
+                            bg: '#050811',
+                            card: '#0A0F1D',
+                            border: '#1E293B'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* FONDO MATRIX CON PUNTOS COMO LA IMAGEN */
+        body {
+            background-color: #050811;
+            background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+
+        .glass-card {
+            background: rgba(10, 15, 29, 0.75);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        /* NEÓN Y BORDES */
+        .neon-border-orange { 
+            border: 1.5px solid #FF5500 !important; 
+            box-shadow: 0 0 25px rgba(255, 85, 0, 0.25) !important; 
+        }
+
+        .sector-card {
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        .sector-card:hover {
+            transform: scale(1.02);
+        }
+
+        /* ANIMACIÓN ACORDEÓN BANDEJAS */
+        .accordion-content {
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .accordion-content.open {
+            grid-template-rows: 1fr;
+        }
+        .accordion-inner {
+            overflow: hidden;
+        }
+
+        /* =========================================================
+           NAPoNET — VISUAL REDESIGN
+           Solo presentación: no altera la lógica de los planes.
+           ========================================================= */
+        body {
+            background:
+                radial-gradient(circle at 50% 22%, rgba(0, 74, 120, 0.14), transparent 32%),
+                #050811;
+            background-image:
+                radial-gradient(rgba(255,255,255,0.055) 1px, transparent 1px),
+                linear-gradient(180deg, #061020 0%, #050811 28%, #020617 100%);
+            background-size: 24px 24px, 100% 100%;
+        }
+
+        .nav-modern {
+            background: linear-gradient(180deg, rgba(6,18,35,.97), rgba(5,13,27,.94));
+            backdrop-filter: blur(18px);
+            box-shadow: 0 8px 30px rgba(0,0,0,.20);
+        }
+
+        .hero-modern {
+            min-height: 335px;
+            background:
+                radial-gradient(circle at 50% 35%, rgba(0, 110, 180, .12), transparent 34%),
+                linear-gradient(180deg, rgba(2,8,20,.35), rgba(2,8,20,.92));
+            border-bottom: 1px solid rgba(30, 41, 59, .65);
+        }
+
+        .hero-modern::before,
+        .hero-modern::after {
+            content: "";
+            position: absolute;
+            width: 340px;
+            height: 340px;
+            border: 1px solid rgba(0, 160, 220, .08);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .hero-modern::before {
+            left: -165px;
+            bottom: -220px;
+            box-shadow:
+                0 0 0 22px rgba(0,160,220,.025),
+                0 0 0 44px rgba(0,160,220,.02),
+                0 0 0 66px rgba(0,160,220,.015);
+        }
+
+        .hero-modern::after {
+            right: -165px;
+            top: -220px;
+            box-shadow:
+                0 0 0 22px rgba(0,160,220,.025),
+                0 0 0 44px rgba(0,160,220,.02),
+                0 0 0 66px rgba(0,160,220,.015);
+        }
+
+        .hero-title-gradient {
+            color: transparent;
+            background-image: linear-gradient(90deg, #ff5500 0%, #ff7a00 45%, #ffbf18 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            filter: drop-shadow(0 0 14px rgba(255,85,0,.12));
+        }
+
+        .hero-title-underline {
+            width: min(520px, 70%);
+            height: 4px;
+            margin: 0 auto;
+            border-radius: 999px;
+            background: linear-gradient(90deg, transparent, #ff5500 25%, #ffb800 70%, transparent);
+            box-shadow: 0 0 18px rgba(255,85,0,.25);
+            transform: skewX(-12deg);
+        }
+
+        .hero-tech-icon {
+            position: absolute;
+            top: 105px;
+            z-index: 2;
+            width: 120px;
+            height: 120px;
+            align-items: center;
+            justify-content: center;
+            color: #ff7a00;
+            border: 2px solid rgba(255,85,0,.72);
+            border-radius: 30% 70% 60% 40%;
+            filter: drop-shadow(0 0 14px rgba(255,85,0,.24));
+            transform: rotate(-7deg);
+        }
+
+        .hero-tech-icon svg {
+            stroke-width: 1.6;
+        }
+
+        .hero-shield { left: max(2vw, calc(50% - 720px)); }
+        .hero-server {
+            right: max(2vw, calc(50% - 720px));
+            border-radius: 70% 30% 40% 60%;
+            transform: rotate(7deg);
+        }
+
+        .hero-grid-lines {
+            position: absolute;
+            width: 420px;
+            height: 190px;
+            opacity: .55;
+            pointer-events: none;
+            background:
+                repeating-radial-gradient(
+                    ellipse at center,
+                    transparent 0 14px,
+                    rgba(0, 145, 200, .13) 15px 16px,
+                    transparent 17px 28px
+                );
+        }
+
+        .hero-grid-left {
+            left: -170px;
+            bottom: -65px;
+            transform: rotate(9deg);
+        }
+
+        .hero-grid-right {
+            right: -170px;
+            top: -70px;
+            transform: rotate(-9deg);
+        }
+
+        .hero-glow {
+            position: absolute;
+            width: 280px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #ff5500, transparent);
+            box-shadow: 0 0 18px rgba(255,85,0,.55);
+            pointer-events: none;
+        }
+
+        .hero-glow-left {
+            left: -45px;
+            top: 80px;
+            transform: rotate(-18deg);
+        }
+
+        .hero-glow-right {
+            right: -45px;
+            bottom: 45px;
+            transform: rotate(-18deg);
+        }
+
+        #planes {
+            padding-top: 22px;
+        }
+
+        #planes > div > .grid {
+            gap: 32px;
+        }
+
+        #planes .glass-card {
+            background: linear-gradient(145deg, rgba(9,22,42,.92), rgba(5,14,29,.92));
+            border-color: rgba(38, 75, 112, .62);
+            box-shadow: 0 18px 45px rgba(0,0,0,.20);
+        }
+
+        #planes .glass-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 22px 55px rgba(0,0,0,.28);
+        }
+
+        #card-plan-2 {
+            box-shadow:
+                0 0 0 1px rgba(255,85,0,.18),
+                0 0 34px rgba(255,85,0,.16),
+                0 20px 55px rgba(0,0,0,.28);
+        }
+
+        #badge-popular {
+            background: linear-gradient(90deg, #ffb800, #ff9f00);
+            box-shadow: 0 0 18px rgba(255,184,0,.48);
+        }
+
+        #btn-plan-empresarial,
+        #nav-btn {
+            box-shadow: 0 0 24px rgba(255,85,0,.34);
+        }
+
+        @media (max-width: 1023px) {
+            .hero-modern {
+                min-height: 300px;
+            }
+            .hero-title-underline {
+                width: 55%;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .hero-modern {
+                min-height: 285px;
+            }
+            .hero-title-underline {
+                width: 75%;
+            }
+        }
+
+    </style>
+</head>
+<body class="text-slate-100 font-sans antialiased selection:bg-brand-orange selection:text-white">
+
+    <!-- NAVBAR EXACTO -->
+    <nav class="fixed top-0 w-full z-50 nav-modern border-b border-slate-800/60">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div id="nav-logo" class="w-10 h-10 bg-brand-orange rounded-xl flex items-center justify-center text-slate-950 font-extrabold text-xl shadow-[0_0_15px_rgba(255,85,0,0.5)] transition-all">N</div>
+                <span class="text-2xl font-black tracking-wider text-white">NAPO<span id="brand-accent" class="text-brand-orange">NET</span></span>
+            </div>
+            
+            <div class="hidden md:flex items-center space-x-8 text-sm font-semibold text-slate-300">
+                <a href="#planes" class="hover:text-white transition">Planes</a>
+                <a href="#modelos" class="hover:text-white transition">Modelos Internacionales</a>
+            </div>
+
+            <a href="#planes" id="nav-btn" class="bg-brand-orange hover:bg-orange-600 text-slate-950 px-6 py-2.5 rounded-xl font-bold transition transform hover:scale-105 shadow-[0_0_20px_rgba(255,85,0,0.4)]">
+                Contratar Plan
+            </a>
+        </div>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <section class="hero-modern relative pt-32 md:pt-36 pb-12 overflow-hidden">
+        <!-- Decorative technology lines -->
+        <div class="hero-grid-lines hero-grid-left"></div>
+        <div class="hero-grid-lines hero-grid-right"></div>
+        <div class="hero-glow hero-glow-left"></div>
+        <div class="hero-glow hero-glow-right"></div>
+
+        <!-- Left shield -->
+        <div class="hero-tech-icon hero-shield hidden lg:flex">
+            <i data-lucide="shield-check" class="w-20 h-20"></i>
+        </div>
+
+        <!-- Right server/cloud -->
+        <div class="hero-tech-icon hero-server hidden lg:flex">
+            <i data-lucide="cloud-cog" class="w-20 h-20"></i>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+            <div class="inline-flex items-center space-x-2 bg-[#091121]/90 border border-cyan-500/40 px-5 py-2 rounded-full mb-7 shadow-[0_0_20px_rgba(0,240,255,0.16)]">
+                <span id="hero-pulse" class="w-2 h-2 rounded-full bg-brand-cyan animate-pulse"></span>
+                <span class="text-[11px] font-extrabold uppercase tracking-widest text-slate-200">INFRAESTRUCTURA & SOPORTE TÉCNICO 24/7</span>
+            </div>
+
+            <!-- TÍTULO PRINCIPAL -->
+            <h1 class="text-4xl md:text-6xl lg:text-7xl font-extrabold tracking-tight mb-5 leading-[1.05]">
+                Tu operación no puede detenerse. <br>
+                <span id="hero-title-accent" class="hero-title-gradient">
+                    Nosotros tampoco.
+                </span>
+            </h1>
+
+            <div class="hero-title-underline"></div>
+
+            <p class="text-slate-300 text-sm md:text-lg max-w-2xl mx-auto leading-relaxed mt-5">
+                Tu infraestructura, siempre en funcionamiento.<br>
+                Mantención, prevención y asistencia técnica, todo en un solo plan.
+            </p>
+        </div>
+    </section>
+
+    <!-- PLANES DE SUSCRIPCIÓN -->
+    <section id="planes" class="py-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+                
+                <!-- PLAN 1: BÁSICO -->
+                <div class="glass-card rounded-3xl p-8 flex flex-col justify-between border border-slate-800 hover:border-slate-700 transition">
+                    <div>
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-2xl font-bold">Plan 1 — Básico</h3>
+                            <span class="text-xs bg-slate-800/80 text-slate-400 font-semibold px-3 py-1 rounded-full border border-slate-700">Personas</span>
+                        </div>
+                        <p class="text-xs text-slate-400 mb-6">Soporte personal y para trabajo en casa.</p>
+                        
+                        <div class="mb-6">
+                            <span class="text-4xl font-extrabold text-white">$15.000</span>
+                            <span class="text-slate-400 text-sm">/mes</span>
+                        </div>
+
+                        <ul class="space-y-4 text-xs text-slate-300 mb-8">
+                            <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 text-slate-400 mr-3"></i> Hasta 4 atenciones mensuales</li>
+                            <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 text-slate-400 mr-3"></i> Soporte remoto y presencial</li>
+                            <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 text-slate-400 mr-3"></i> Mantención de equipos personales</li>
+                            <li class="flex items-center text-slate-600"><i data-lucide="x" class="w-4 h-4 mr-3"></i> Sin acceso a App NapoNet</li>
+                        </ul>
+                    </div>
+                    <button class="w-full py-3.5 rounded-xl font-bold bg-slate-800/70 hover:bg-slate-700 text-slate-200 text-xs transition border border-slate-700">Seleccionar Básico</button>
+                </div>
+
+                <!-- PLAN 2: EMPRESARIAL -->
+                <div id="card-plan-2" class="glass-card neon-border-orange rounded-3xl p-8 relative transition-all duration-300">
+                    
+                    <button onclick="toggleBandejas()" id="badge-popular" class="absolute -top-4 right-8 bg-brand-orange text-slate-950 font-extrabold text-[11px] uppercase px-4 py-1.5 rounded-full shadow-[0_0_15px_rgba(255,85,0,0.6)] transition-colors duration-300 flex items-center space-x-1 cursor-pointer">
+                        <span>MÁS POPULAR ★</span>
+                        <i id="badge-icon" data-lucide="chevron-down" class="w-3.5 h-3.5 ml-1 transition-transform duration-300"></i>
+                    </button>
+
+                    <div class="flex justify-between items-start mb-2">
+                        <div>
+                            <h3 class="text-2xl font-bold text-white">Plan 2 — Empresarial</h3>
+                            <p id="txt-subsector" class="text-xs font-bold mt-1 text-brand-orange transition-colors">Sector Minería Activo</p>
+                        </div>
+                        <span id="tag-atenciones" class="text-[11px] font-bold px-3 py-1 rounded-full border border-brand-orange/40 text-brand-orange bg-orange-950/30">12 Atenciones</span>
+                    </div>
+
+                    <div class="mb-4">
+                        <span id="price-empresarial" class="text-4xl font-extrabold text-brand-orange transition-colors">$70.000</span>
+                        <span class="text-slate-400 text-sm">/mes</span>
+                    </div>
+
+                    <p class="text-[11px] text-slate-400 mb-5 leading-relaxed">
+                        Incluye hasta 12 atenciones mensuales, mantención, prevención, reparación y aplicación propia para solicitar asistencia.
+                    </p>
+
+                    <!-- BOTÓN SELECCIONAR SECTOR -->
+                    <button onclick="toggleBandejas()" id="btn-toggle-sectores" class="w-full py-2.5 mb-4 rounded-xl font-bold border border-slate-700/80 bg-slate-800/50 hover:bg-slate-800 text-slate-300 text-[10px] uppercase tracking-wider flex items-center justify-center space-x-2 transition cursor-pointer">
+                        <i data-lucide="layers" class="w-3.5 h-3.5"></i>
+                        <span>Haz clic aquí para seleccionar Sector</span>
+                    </button>
+
+                    <!-- BANDEJAS DESPLEGABLES CON IMÁGENES HD -->
+                    <div id="sub-bandejas" class="accordion-content">
+                        <div class="accordion-inner space-y-3 pt-3 border-t border-slate-800">
+                            
+                            <!-- MINERÍA (IMAGEN HD) -->
+                            <div onclick="setSector('mining')" 
+                                 id="bandeja-mining"
+                                 class="sector-card rounded-2xl p-4 border-2 border-brand-orange shadow-lg relative overflow-hidden" 
+                                 style="background: linear-gradient(rgba(7, 9, 14, 0.75), rgba(7, 9, 14, 0.85)), url('https://images.unsplash.com/photo-1618042164219-62c820f10723?auto=format&fit=crop&w=1200&q=80'); background-size: cover; background-position: center;">
+                                <div class="relative z-10">
+                                    <div class="flex items-center space-x-2 text-brand-orange font-bold mb-1">
+                                        <i data-lucide="pickaxe" class="w-4 h-4"></i>
+                                        <h4 class="text-xs uppercase tracking-wider">Sector Minería</h4>
+                                    </div>
+                                    <p class="text-[11px] text-slate-300 mb-2">Mantención de telemetría, sensores de fatiga y soporte en faena.</p>
+                                    <div class="flex justify-between items-center text-[10px] font-mono text-brand-orange font-bold">
+                                        <span>✓ Radar App Minera</span>
+                                        <span>✓ Baja Latencia</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- PESCADERÍA -->
+                            <div onclick="setSector('aqua')" 
+                                 id="bandeja-aqua"
+                                 class="sector-card rounded-2xl p-4 border border-slate-800 shadow-lg relative overflow-hidden" 
+                                 style="background: linear-gradient(rgba(7, 9, 14, 0.75), rgba(7, 9, 14, 0.85)), url('https://images.unsplash.com/photo-1518837695005-2083093ee35b?auto=format&fit=crop&w=1200&q=80'); background-size: cover; background-position: center;">
+                                <div class="relative z-10">
+                                    <div class="flex items-center space-x-2 text-brand-cyan font-bold mb-1">
+                                        <i data-lucide="ship" class="w-4 h-4"></i>
+                                        <h4 class="text-xs uppercase tracking-wider">Sector Pescadería / Acuicultura</h4>
+                                    </div>
+                                    <p class="text-[11px] text-slate-300 mb-2">Sensores IoT para cadena de frío y oxigenación.</p>
+                                    <div class="flex justify-between items-center text-[10px] font-mono text-brand-cyan font-bold">
+                                        <span>✓ Trazabilidad Real</span>
+                                        <span>✓ Radar de Barcos</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- AGRICULTURA -->
+                            <div onclick="setSector('agro')" 
+                                 id="bandeja-agro"
+                                 class="sector-card rounded-2xl p-4 border border-slate-800 shadow-lg relative overflow-hidden" 
+                                 style="background: linear-gradient(rgba(7, 9, 14, 0.75), rgba(7, 9, 14, 0.85)), url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1200&q=80'); background-size: cover; background-position: center;">
+                                <div class="relative z-10">
+                                    <div class="flex items-center space-x-2 text-brand-yellow font-bold mb-1">
+                                        <i data-lucide="sprout" class="w-4 h-4"></i>
+                                        <h4 class="text-xs uppercase tracking-wider">Sector Agricultura</h4>
+                                    </div>
+                                    <p class="text-[11px] text-slate-300 mb-2">Soporte a sistemas de riego automatizados y drones.</p>
+                                    <div class="flex justify-between items-center text-[10px] font-mono text-brand-yellow font-bold">
+                                        <span>✓ Monitoreo Satelital</span>
+                                        <span>✓ Técnico en Terreno</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <button id="btn-plan-empresarial" class="w-full mt-4 py-3.5 rounded-xl font-extrabold bg-brand-orange hover:bg-orange-600 text-slate-950 text-xs transition shadow-[0_0_20px_rgba(255,85,0,0.5)]">
+                        Contratar Plan Empresarial ($70.000)
+                    </button>
+                </div>
+
+                <!-- PLAN 3: PREMIUM -->
+                <div class="glass-card rounded-3xl p-8 flex flex-col justify-between border border-slate-800 hover:border-slate-700 transition">
+                    <div>
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-2xl font-bold">Plan 3 — Premium</h3>
+                            <span class="text-xs bg-amber-950/60 text-amber-400 font-bold px-3 py-1 rounded-full border border-amber-800/40">Corporativo</span>
+                        </div>
+                        <p class="text-xs text-slate-400 mb-6">Disponibilidad total diaria para operaciones críticas.</p>
+                        
+                        <div class="mb-6">
+                            <span class="text-4xl font-extrabold text-white">$150.000</span>
+                            <span class="text-slate-400 text-sm">/mes</span>
+                        </div>
+
+                        <ul class="space-y-4 text-xs text-slate-300 mb-8">
+                            <li class="flex items-center"><i data-lucide="zap" class="w-4 h-4 text-brand-yellow mr-3"></i> <strong>Solicitud de asistencia todos los días</strong></li>
+                            <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 text-brand-yellow mr-3"></i> Mantención, prevención y reparación</li>
+                            <li class="flex items-center"><i data-lucide="smartphone" class="w-4 h-4 text-brand-yellow mr-3"></i> Aplicación propia prioritaria</li>
+                            <li class="flex items-center"><i data-lucide="shield-check" class="w-4 h-4 text-brand-yellow mr-3"></i> <strong>Atención prioritaria inmediata</strong></li>
+                        </ul>
+                    </div>
+                    <button class="w-full py-3.5 rounded-xl font-bold bg-brand-yellow hover:bg-yellow-400 text-slate-950 text-xs transition shadow-[0_0_15px_rgba(255,184,0,0.3)]">Solicitar Premium</button>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- SECCIÓN: ADAPTACIÓN DE MODELOS INTERNACIONALES A CHILE -->
+    <section id="modelos" class="py-16 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight mb-3">
+                    Adaptación de Modelos Internacionales a Chile
+                </h2>
+                <p class="text-slate-400 text-sm max-w-2xl mx-auto">
+                    Proyectos probados con éxito en otros países que responden a necesidades urgentes en el contexto local.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                
+                <!-- PROYECTO 1 -->
+                <div class="glass-card rounded-3xl p-8 border border-slate-800/80 hover:border-cyan-500/40 transition flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center space-x-3 mb-6">
+                            <div class="w-10 h-10 bg-cyan-950/60 border border-brand-cyan/40 rounded-xl flex items-center justify-center text-brand-cyan">
+                                <i data-lucide="satellite" class="w-5 h-5"></i>
+                            </div>
+                            <h3 class="text-lg font-bold text-white leading-snug">
+                                Monitoreo Satelital de Bajas Pérdidas e Incendios Forestales <br>
+                                <span class="text-xs text-brand-cyan font-mono font-semibold">(IoT Direct-to-Cell / LoRaWAN + LEO)</span>
+                            </h3>
+                        </div>
+
+                        <div class="space-y-3 text-xs text-slate-300">
+                            <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+                                <span class="text-brand-orange font-bold uppercase block mb-1">El problema en Chile:</span>
+                                Grandes extensiones de bosque y zonas cordilleranas no tienen cobertura celular tradicional (4G/5G).
+                            </div>
+                            
+                            <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+                                <span class="text-brand-cyan font-bold uppercase block mb-1">La idea:</span>
+                                Implementar sensores IoT forestales de bajo costo conectados directamente a constelaciones satelitales de órbita baja (LEO) o redes Mesh/LoRaWAN con repetidores de largo alcance. Detectan temperatura, humedad e indicadores de combustión en tiempo real antes de que el fuego sea visible por satélites ópticos.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 pt-4 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
+                        <span class="font-bold text-slate-500 uppercase">Referencia internacional:</span>
+                        <span class="text-slate-300 font-medium">Dryad Networks (Alemania) / Direct-to-Cell SpaceX</span>
+                    </div>
+                </div>
+
+                <!-- PROYECTO 2 -->
+                <div class="glass-card rounded-3xl p-8 border border-slate-800/80 hover:border-brand-yellow/40 transition flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center space-x-3 mb-6">
+                            <div class="w-10 h-10 bg-amber-950/60 border border-brand-yellow/40 rounded-xl flex items-center justify-center text-brand-yellow">
+                                <i data-lucide="radio-tower" class="w-5 h-5"></i>
+                            </div>
+                            <h3 class="text-lg font-bold text-white leading-snug">
+                                Redes Móviles Privadas 5G Standalone (SA) <br>
+                                <span class="text-xs text-brand-yellow font-mono font-semibold">Para Mediana Minería y Agricultura</span>
+                            </h3>
+                        </div>
+
+                        <div class="space-y-3 text-xs text-slate-300">
+                            <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+                                <span class="text-brand-orange font-bold uppercase block mb-1">El problema en Chile:</span>
+                                La gran minería usa redes privadas 5G de alto costo, pero las medianas mineras, las salmoneras en el sur o los campos agrícolas de exportación no pueden pagar infraestructura a medida de las grandes telcos.
+                            </div>
+                            
+                            <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+                                <span class="text-brand-yellow font-bold uppercase block mb-1">La idea:</span>
+                                Una empresa integradora de Redes Privadas Neutras/OpenRAN (usando software open source como Open5GS y equipos de radio comunitarios/comerciales de bajo costo). Permite automatización, teleoperación de maquinaria y sensores sin depender de la señal pública de una telco.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 pt-4 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
+                        <span class="font-bold text-slate-500 uppercase">Referencia internacional:</span>
+                        <span class="text-slate-300 font-medium">OpenRAN en zonas rurales de EE. UU. e India</span>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-slate-800/60 py-8 text-slate-500 text-xs text-center">
+        <p>NapoNet Systems © 2026 — Red Inteligente de Mantención & Telecomunicaciones.</p>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+
+        function toggleBandejas() {
+            const container = document.getElementById('sub-bandejas');
+            const badgeIcon = document.getElementById('badge-icon');
+            
+            container.classList.toggle('open');
+            if(container.classList.contains('open')) {
+                badgeIcon.style.transform = 'rotate(180deg)';
+            } else {
+                badgeIcon.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        function setSector(sector) {
+            const cardPlan2 = document.getElementById('card-plan-2');
+            const price = document.getElementById('price-empresarial');
+            const subsector = document.getElementById('txt-subsector');
+            const badge = document.getElementById('badge-popular');
+            const btn = document.getElementById('btn-plan-empresarial');
+
+            document.getElementById('bandeja-mining').className = "sector-card rounded-2xl p-4 border border-slate-800 shadow-lg relative overflow-hidden";
+            document.getElementById('bandeja-aqua').className = "sector-card rounded-2xl p-4 border border-slate-800 shadow-lg relative overflow-hidden";
+            document.getElementById('bandeja-agro').className = "sector-card rounded-2xl p-4 border border-slate-800 shadow-lg relative overflow-hidden";
+
+            if (sector === 'mining') {
+                cardPlan2.className = "glass-card neon-border-orange rounded-3xl p-8 relative transition-all duration-300";
+                document.getElementById('bandeja-mining').className = "sector-card rounded-2xl p-4 border-2 border-brand-orange shadow-lg relative overflow-hidden";
+                price.className = "text-4xl font-extrabold text-brand-orange transition-colors";
+                subsector.className = "text-xs font-bold mt-1 text-brand-orange transition-colors";
+                subsector.innerText = "Sector Minería Activo";
+                badge.className = "absolute -top-4 right-8 bg-brand-orange text-slate-950 font-extrabold text-[11px] uppercase px-4 py-1.5 rounded-full shadow-[0_0_15px_rgba(255,85,0,0.6)] transition-colors flex items-center space-x-1 cursor-pointer";
+                btn.className = "w-full mt-4 py-3.5 rounded-xl font-extrabold bg-brand-orange hover:bg-orange-600 text-slate-950 text-xs transition shadow-[0_0_20px_rgba(255,85,0,0.5)]";
+            } else if (sector === 'agro') {
+                cardPlan2.className = "glass-card border-2 border-brand-yellow rounded-3xl p-8 relative transition-all duration-300 shadow-[0_0_25px_rgba(255,184,0,0.25)]";
+                document.getElementById('bandeja-agro').className = "sector-card rounded-2xl p-4 border-2 border-brand-yellow shadow-lg relative overflow-hidden";
+                price.className = "text-4xl font-extrabold text-brand-yellow transition-colors";
+                subsector.className = "text-xs font-bold mt-1 text-brand-yellow transition-colors";
+                subsector.innerText = "Sector Agricultura Activo";
+                badge.className = "absolute -top-4 right-8 bg-brand-yellow text-slate-950 font-extrabold text-[11px] uppercase px-4 py-1.5 rounded-full shadow-[0_0_15px_rgba(255,184,0,0.6)] transition-colors flex items-center space-x-1 cursor-pointer";
+                btn.className = "w-full mt-4 py-3.5 rounded-xl font-extrabold bg-brand-yellow hover:bg-yellow-400 text-slate-950 text-xs transition shadow-[0_0_20px_rgba(255,184,0,0.5)]";
+            } else if (sector === 'aqua') {
+                cardPlan2.className = "glass-card border-2 border-brand-cyan rounded-3xl p-8 relative transition-all duration-300 shadow-[0_0_25px_rgba(0,240,255,0.25)]";
+                document.getElementById('bandeja-aqua').className = "sector-card rounded-2xl p-4 border-2 border-brand-cyan shadow-lg relative overflow-hidden";
+                price.className = "text-4xl font-extrabold text-brand-cyan transition-colors";
+                subsector.className = "text-xs font-bold mt-1 text-brand-cyan transition-colors";
+                subsector.innerText = "Sector Pescadería Activo";
+                badge.className = "absolute -top-4 right-8 bg-brand-cyan text-slate-950 font-extrabold text-[11px] uppercase px-4 py-1.5 rounded-full shadow-[0_0_15px_rgba(0,240,255,0.6)] transition-colors flex items-center space-x-1 cursor-pointer";
+                btn.className = "w-full mt-4 py-3.5 rounded-xl font-extrabold bg-brand-cyan hover:bg-cyan-400 text-slate-950 text-xs transition shadow-[0_0_20px_rgba(0,240,255,0.5)]";
+            }
+        }
+    </script>
+</body>
+</html>
